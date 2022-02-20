@@ -112,37 +112,35 @@ public class Model extends Observable {
         board.setViewingPerspective(side);
         int size = board.size();
         boolean [][] merged = new boolean[size][size];
-        for (int i = 0 ; i<size ;i++){
-            for (int j = size-2 ;j>=0 ;j--){
-                if (board.tile(i,j)!=null){
-                    Tile t = board.tile(i,j);
-                    int r = j+1 ;
-                    while(r<=3){
-                        Tile t1 =board.tile(i,r);
-                        if((t1!=null&&t.value()!=t1.value())|| (t1!=null&&merged[i][r]== true)){
-                            r--;
-                            break;
-                        }
-
-                        if(r == size-1){
-                            break;
-                        }
-                        r++;
-
-                    }
-
-                    if(r!=j){
-                        changed = true;
-                    }
-                    if(board.move(i,r,t)){
-                        score=score+ board.tile(i,r).value();
-                        merged[i][r]=true;
-                    }
-
-
-
+        for (int i = size-1 ; i>=0 ;i--) {
+            for (int j = size - 1; j >= 0; j--) {
+                if (j == size - 1) {
+                    continue;
                 }
+                if (board.tile(i, j) == null) {
+                    continue;
+                }
+                if (board.tile(i, j) != null) {
+                    int t = board.tile(i, j).value();
+                    /*check other tile in the same column except itself*/
+                    for (int k = size - 1; k > j; k--) {
 
+                        if (board.tile(i, k) != null) {
+                            int t1 = board.tile(i, k).value();
+                            if (!merged[i][k] && t == t1) {
+                                board.move(i, k, board.tile(i, j));
+                                score = score + board.tile(i, k).value();
+                                changed = true;
+                                merged[i][k] = true;
+                                break;
+                            }
+                        } else if (board.tile(i, k) == null) {
+                            board.move(i, k, board.tile(i, j));
+                            changed = true;
+                            break;
+                        }
+                    }
+                }
             }
         }
         board.setViewingPerspective(Side.NORTH);
@@ -224,22 +222,22 @@ public class Model extends Observable {
 
                     int a = b.tile(i, j).value();
                     if (i < 3) {
-                        if (a == b.tile(i + 1, j).value()) {
+                        if (b.tile(i+1,j)==null||a == b.tile(i + 1, j).value()){
                             return true;
                         }
                     }
                     if (j < 3) {
-                        if (a == b.tile(i, j + 1).value()) {
+                        if (b.tile(i, j + 1)==null||a == b.tile(i, j + 1).value()) {
                             return true;
                         }
                     }
                     if (i > 0) {
-                        if (a == b.tile(i - 1, j).value()) {
+                        if (b.tile(i - 1, j)==null||a == b.tile(i - 1, j).value()) {
                             return true;
                         }
                     }
                     if (j > 0) {
-                        if (a == b.tile(i, j - 1).value()) {
+                        if (b.tile(i, j - 1)==null||a == b.tile(i, j - 1).value()) {
                             return true;
                         }
                     }
